@@ -4,11 +4,7 @@ import { Gender_Enum } from 'src/common/enum';
 import { MESSAGES } from 'src/common/messages';
 const {
   USER: {
-    ERROR: {
-      GENDER_DOES_NOT_EXIST,
-      BLOOD_GROUP_DOES_NOT_EXIST,
-      MARITAL_STATUS_DOES_NOT_EXIST,
-    },
+    ERROR: { GENDER_DOES_NOT_EXIST },
   },
 } = MESSAGES;
 

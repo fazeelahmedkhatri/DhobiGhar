@@ -90,12 +90,44 @@ export const MESSAGES = {
     },
     ERROR: {
       USER_DOES_NOT_EXIST: "User doesn't exist",
-      COMPLETE_STEP_ONE_FIRST: 'You need to complete step one first.',
-      STEP_TWO_ALREADY_COMPLETED: 'Step two is already completed.',
-      CNIC_ALREADY_EXISTS: 'CNIC already exists',
       GENDER_DOES_NOT_EXIST: 'Gender does not exist',
-      MARITAL_STATUS_DOES_NOT_EXIST: 'Marital Status does not exist',
-      BLOOD_GROUP_DOES_NOT_EXIST: 'Blood group does not exist',
+    },
+  },
+  PRODUCTS: {
+    SUCCESS: {
+      PRODUCTS_ADDED_SUCCESSFULLY: 'Product has been added successfully',
+    },
+    ERROR: {
+      PRODUCT_DOES_NOT_EXIST: "Product doesn't exist",
+      PRODUCT_LENGTH_PRICE_LENGTH_ERROR:
+        'The length of product and price must match',
+    },
+  },
+
+  SERVICES: {
+    SUCCESS: {
+      SERVICES_ADDED_SUCCESSFULLY: 'Service has been added successfully',
+    },
+    ERROR: {
+      SERVICE_DOES_NOT_EXIST: "Service doesn't exist",
+    },
+  },
+
+  BUSINESS: {
+    SUCCESS: {
+      BUSINESS_ADDED_SUCCESSFULLY: 'Business has been added successfully',
+    },
+    ERROR: {
+      BUSINESS_DOES_NOT_EXIST: "Business doesn't exist",
+    },
+  },
+
+  CART: {
+    SUCCESS: {
+      CART_ADDED_SUCCESSFULLY: 'Cart has been created successfully',
+    },
+    ERROR: {
+      CART_DOES_NOT_EXIST: "Cart doesn't exist",
     },
   },
 };

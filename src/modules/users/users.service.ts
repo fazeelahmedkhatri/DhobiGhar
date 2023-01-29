@@ -29,7 +29,7 @@ import { KEY_EXTRACTOR } from 'src/utils/key.extractor.from.error.detail';
 import { MESSAGES } from 'src/common/messages';
 const {
   USER: {
-    ERROR: { USER_DOES_NOT_EXIST, COMPLETE_STEP_ONE_FIRST },
+    ERROR: { USER_DOES_NOT_EXIST },
   },
 } = MESSAGES;
 

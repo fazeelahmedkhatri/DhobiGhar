@@ -1,4 +1,5 @@
-import { Column, Entity } from 'typeorm';
+import { UserEntity } from '../../users/entities/user.entity';
+import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
 import { DefaultEntity } from '../../base/entities/base.entity';
 
 @Entity('consumers')
@@ -20,4 +21,14 @@ export class ConsumersEntity extends DefaultEntity {
     nullable: true,
   })
   latitude: string;
+
+  @Column()
+  user_id: number;
+
+  @OneToOne(() => UserEntity, (users) => users.id, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
+  users: UserEntity;
 }

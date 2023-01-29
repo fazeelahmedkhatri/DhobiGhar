@@ -46,6 +46,6 @@ export class RidersEntity extends DefaultEntity {
     onDelete: 'CASCADE',
     eager: true,
   })
-  @JoinColumn({ name: 'users_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   users: UserEntity;
 }

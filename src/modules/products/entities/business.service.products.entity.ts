@@ -7,6 +7,9 @@ import { ProductsEntity } from './products.entity';
 @Entity('business_service_products')
 export class BusinessServiceProductsEntity extends DefaultEntity {
   @Column()
+  price: number;
+
+  @Column()
   business_id: number;
 
   @ManyToOne(() => BusinessEntity, (business) => business.id, {

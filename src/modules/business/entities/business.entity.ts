@@ -32,17 +32,17 @@ export class BusinessEntity extends DefaultEntity {
   business_contact: string;
 
   @Column({
-    name: 'urgent_devliery',
+    name: 'urgent_delivery',
     type: 'boolean',
     default: false,
   })
-  urgent_deivery: boolean;
+  urgent_delivery: boolean;
 
   @Column({
     name: 'urgent_charges_percentage',
     nullable: true,
   })
-  urgent_charges_percentage: string;
+  urgent_charges_percentage: number;
 
   @Column()
   user_id: number;
@@ -51,6 +51,6 @@ export class BusinessEntity extends DefaultEntity {
     onDelete: 'CASCADE',
     eager: true,
   })
-  @JoinColumn({ name: 'users_id', referencedColumnName: 'id' })
+  @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   users: UserEntity;
 }

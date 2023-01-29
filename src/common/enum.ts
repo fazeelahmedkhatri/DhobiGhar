@@ -19,3 +19,8 @@ export enum Order_Status_Enum {
   DELIVERED_TO_CONSUMER = 'delivered_to_consumer',
   IN_PROCESS = 'in_process',
 }
+export enum Cart_Status_Enum {
+  COMPLETED = 'completed',
+  DISCARDED = 'discarded',
+  OPEN = 'open',
+}
