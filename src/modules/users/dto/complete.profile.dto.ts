@@ -17,10 +17,6 @@ export class CompleteProfileDto {
   @IsString()
   full_name: string | null;
 
-  @ApiProperty({ example: '5.0' })
-  @IsString()
-  rating: string | null;
-
   @ApiProperty()
   @IsString()
   birth_date: Date | null;

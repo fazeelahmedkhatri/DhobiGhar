@@ -186,7 +186,7 @@ export class AuthController extends ResponseController {
     @CurrentUser({ required: true })
     user: IRedisUserModel,
   ): Promise<iResponseJson> {
-    const user_details = await this.authService.GetUser(user.user_id);
+    const user_details = await this.authService.GetUser(user);
     return this.OKResponse(user_details);
   }
 }

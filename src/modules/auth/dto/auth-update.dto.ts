@@ -7,7 +7,7 @@ const {
 } = MESSAGES;
 
 export class AuthUpdateDto {
-  @ApiProperty({ example: 'Inaequo Solutions' })
+  @ApiProperty({ example: 'Szabist' })
   @IsOptional()
   @IsNotEmpty({ message: `${MUST_NOT_BE_EMPTY}` })
   name?: string;

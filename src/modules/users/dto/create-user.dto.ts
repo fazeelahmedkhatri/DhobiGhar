@@ -2,6 +2,7 @@ import { Transform } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsString,
@@ -13,6 +14,7 @@ import { IsNotExist } from '../../../utils/validators/is-not-exists.validator';
 import { RoleEntity } from 'src/modules/roles/entities/role.entity';
 import { MESSAGES } from 'src/common/messages';
 import { IsExist } from 'src/utils/validators/is-exists.validator';
+import { Gender_Enum } from 'src/common/enum';
 
 const {
   EMAIL: {
@@ -57,9 +59,22 @@ export class CreateUserDto {
   contact_number: string | null;
 
   @ApiProperty({ type: RoleEntity })
-  @IsNumber()
-  @Validate(IsExist, ['roles', 'id'], {
-    message: ROLE_DOES_NOT_EXIST,
-  })
-  role_id: number | null;
+  @IsString()
+  role: string | null;
+
+  @ApiProperty({ example: 'Karachi' })
+  @IsString()
+  city: string | null;
+
+  @ApiProperty({ example: 'John' })
+  @IsString()
+  full_name: string | null;
+
+  @ApiProperty()
+  @IsString()
+  birth_date: Date | null;
+
+  @ApiProperty({ enum: Gender_Enum })
+  @IsEnum(Gender_Enum, { message: ROLE_DOES_NOT_EXIST })
+  gender: Gender_Enum | null;
 }

@@ -21,12 +21,13 @@ import { Hashpassword } from 'src/helpers/UtilHelper';
 import { UserRolesEntity } from '../user_role/entities/user.role.entity';
 import { RoleRepository } from '../roles/role.repository';
 import { AuthService } from '../auth/auth.service';
-import { Request } from 'express';
+import { query, Request } from 'express';
 import { appEnv } from 'src/helpers/EnvHelper';
 import { CompleteProfileDto } from './dto/complete.profile.dto';
 import { IRedisUserModel } from '../base/base.interface';
 import { KEY_EXTRACTOR } from 'src/utils/key.extractor.from.error.detail';
 import { MESSAGES } from 'src/common/messages';
+import { RoleEntity } from '../roles/entities/role.entity';
 const {
   USER: {
     ERROR: { USER_DOES_NOT_EXIST },
@@ -55,15 +56,19 @@ export class UserService extends BaseService<
     req: Request,
   ): Promise<UserResponse> {
     let user_details: UserEntity;
-    const { role_id, ...user } = body;
+    const { role, ...user } = body;
     user.password = await Hashpassword(user.password);
     const map_user = await plainToInstance(UserEntity, user);
+    map_user.rating = '5.0';
 
     const query_runner = this.dataSource.createQueryRunner();
     await query_runner.startTransaction();
 
     try {
       user_details = await query_runner.manager.save(map_user);
+      const { id: role_id } = await query_runner.manager.findOneBy(RoleEntity, {
+        name: role,
+      });
       const { id } = user_details;
       const mapped_user_roles = await plainToInstance(UserRolesEntity, {
         user_id: id,
@@ -82,7 +87,7 @@ export class UserService extends BaseService<
         FullName: `${body.email}`,
         ActivationLink: `${this.configService.get('URL_ORIGIN')}://${req.get(
           'host',
-        )}/auth/reset/password/${token}`,
+        )}/api/v1/auth/verify/email?token=${token}`,
       };
 
       const mail_options = {
@@ -131,6 +136,7 @@ export class UserService extends BaseService<
       }
       const updated_body = {
         is_profile_completed: user.is_profile_completed,
+        rating: '5.0',
         ...body,
       };
       const mapped_user = await plainToInstance(UserEntity, {

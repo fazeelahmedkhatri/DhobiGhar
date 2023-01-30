@@ -21,7 +21,7 @@ const {
 } = MESSAGES;
 
 export class AuthChangePasswordDto {
-  @ApiProperty({ example: 'info@inaequo.net' })
+  @ApiProperty({ example: 'info@szabist.pk' })
   @Transform(({ value }) => value.toLowerCase().trim())
   @Validate(IsExist, ['users'], {
     message: EMAIL_DOES_NOT_EXIST,

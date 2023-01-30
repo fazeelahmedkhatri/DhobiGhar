@@ -111,8 +111,8 @@ export class AuthService {
       user.verified = true;
       await this.userRepository.save(user);
 
-      const front_end_url = `${appEnv('FRONTEND_DOMAIN')}/auth/login`;
-      return response.redirect(front_end_url);
+      const webpage_url = appEnv('VERIFICATION_WEBPAGE');
+      return response.redirect(webpage_url);
     } catch (error) {
       throw error;
     }
@@ -303,15 +303,24 @@ export class AuthService {
     }
   }
 
-  public async GetUser(user_id: number): Promise<any> {
-    const users = await this.userService.FindOne(user_id, ['user_roles']);
+  public async GetUser(current_user): Promise<any> {
+    const users = await this.userRepository.findOneBy({
+      id: current_user.user_id,
+    });
     if (!users) {
       throw new NotFoundException(USER_DOES_NOT_EXIST);
     }
-    const user = await this.userRepository.FindUserWithRoleAndPassword({
-      email: users.email,
-    });
-    delete user['password'];
-    return { user };
+    const payload = {
+      user_id: users.id,
+      role: current_user.role,
+      role_id: current_user.role_id,
+    };
+    const access_promise = this.jwtHelperService.SignAccessToken(payload);
+    const refresh_promise = this.jwtHelperService.SignRefreshToken(payload);
+    const [access_token, refresh_token] = await Promise.all([
+      access_promise,
+      refresh_promise,
+    ]);
+    return { user: users, access_token, refresh_token };
   }
 }
