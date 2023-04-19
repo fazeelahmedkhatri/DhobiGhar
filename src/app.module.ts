@@ -29,6 +29,7 @@ import { ConsumersModule } from './modules/consumers/consumers.module';
 import { ProductsModule } from './modules/products/products.module';
 import { ServicesModule } from './modules/services/services.module';
 import { OrdersModule } from './modules/orders/orders.module';
+import { AdminModule } from './modules/admin/admin.module';
 
 @Module({
   imports: [
@@ -60,6 +61,7 @@ import { OrdersModule } from './modules/orders/orders.module';
     ProductsModule,
     ServicesModule,
     OrdersModule,
+    AdminModule,
   ],
   providers: [
     AuthService,
