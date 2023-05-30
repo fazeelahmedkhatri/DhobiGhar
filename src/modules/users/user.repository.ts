@@ -11,6 +11,7 @@ export class UserRepository extends Repository<UserEntity> {
   async FindUserWithRoleAndPassword(data: any): Promise<UserEntity[]> {
     const user = await this.dataSource.manager.query(`select
       u.id,
+      u.full_name,
       email ,
       "password" ,
       contact_number,
@@ -26,6 +27,7 @@ export class UserRepository extends Repository<UserEntity> {
     where email= '${data.email}'
     group by
       u.id,
+      u.full_name,
       email ,
       "password" ,
       "contact_number",

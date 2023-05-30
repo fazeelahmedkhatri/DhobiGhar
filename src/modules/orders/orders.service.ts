@@ -19,8 +19,10 @@ import { BusinessServiceProductsEntity } from '../products/entities/business.ser
 import { CartEntity } from './entities/cart.entity';
 import { CartBusinessServiceProductsEntity } from './entities/cart.business.service.product.entity';
 import duplicationProneBatchInsertion from 'src/helpers/duplicationProneBatchInsertion';
-import { Cart_Status_Enum } from 'src/common/enum';
+import { Cart_Status_Enum, Order_Status_Enum } from 'src/common/enum';
 import { MESSAGES } from 'src/common/messages';
+import { PaymentsEntity } from '../payments/entities/payments.entity';
+import { OrdersBusinessServicesProductsEntity } from './entities/orders.business.services.products.entity';
 
 @Injectable()
 export class OrdersService extends BaseService<
@@ -118,24 +120,106 @@ export class OrdersService extends BaseService<
         consumer_id: consumer.id,
       });
       const cart = await query_runner.manager.save(mapped_cart);
-      const cart_business_service_products =
-        await duplicationProneBatchInsertion(
-          query_runner.manager,
-          bsp_temp.map((bsp: number, i) => {
-            const cart_business_service_products =
-              new CartBusinessServiceProductsEntity();
-            cart_business_service_products.business_service_product_id = bsp;
-            cart_business_service_products.cart_id = cart.id;
-            cart_business_service_products.quantity = quantity[i];
-            return cart_business_service_products;
-          }),
-          CartBusinessServiceProductsEntity,
-          ['cart_id', 'business_service_product_id'],
-        );
+      await duplicationProneBatchInsertion(
+        query_runner.manager,
+        bsp_temp.map((bsp: number, i) => {
+          const cart_business_service_products =
+            new CartBusinessServiceProductsEntity();
+          cart_business_service_products.business_service_product_id = bsp;
+          cart_business_service_products.cart_id = cart.id;
+          cart_business_service_products.quantity = quantity[i];
+          return cart_business_service_products;
+        }),
+        CartBusinessServiceProductsEntity,
+        ['cart_id', 'business_service_product_id'],
+      );
 
       await query_runner.commitTransaction();
 
       return total_amount;
+    } catch (error) {
+      await query_runner.rollbackTransaction();
+      throw new InternalServerErrorException({ message: error });
+    } finally {
+      await query_runner.release();
+    }
+  }
+
+  public async CreateOrder(body: CreateOrdersDto): Promise<any> {
+    const {
+      business_service_products,
+      total_amount,
+      consumer_id,
+      is_payment_completed,
+      business_id,
+    } = body;
+    const bsp_temp = business_service_products;
+    // if (business_service_products.length != unit.length) {
+    //   throw new BadRequestException(
+    //     'The length of business service products and unit should be same',
+    //   );
+    // }
+    const query_runner = this.dataSource.createQueryRunner();
+    await query_runner.startTransaction();
+    try {
+      const bsp_ids = bsp_temp.map((bsp) => bsp.id);
+      const bsps = await query_runner.manager.find(
+        BusinessServiceProductsEntity,
+        {
+          where: { id: In(bsp_ids) },
+          loadEagerRelations: false,
+        },
+      );
+      const found_bsp_ids = bsps.map((bsp) => bsp.id);
+      if (bsps.length !== bsp_temp.length) {
+        const not_found_bsp_ids = bsp_temp
+          .filter((bsp) => !found_bsp_ids.includes(bsp.id))
+          .map((b) => b.id);
+        console.log(not_found_bsp_ids);
+        throw new NotFoundException(
+          `Following Business Service Products Ids not Found: ${not_found_bsp_ids.join(
+            ', ',
+          )}`,
+        );
+      }
+
+      const mapped_payment = plainToInstance(PaymentsEntity, {
+        total_amount,
+        is_payment_completed,
+      });
+      const payment = await query_runner.manager.save(mapped_payment);
+      const mapped_order = plainToInstance(OrdersEntity, {
+        total_amount,
+        consumer_id,
+        address: body.address,
+        longitude: body.longitude,
+        latitude: body.latitude,
+        order_description: body.order_description,
+        order_status: Order_Status_Enum.PENDING,
+        rider_id: 4,
+        payment_id: payment.id,
+        business_id,
+      });
+      const order = await query_runner.manager.save(mapped_order);
+      const order_business_service_products =
+        await duplicationProneBatchInsertion(
+          query_runner.manager,
+          bsp_temp.map((bsp) => {
+            const order_business_service_products =
+              new OrdersBusinessServicesProductsEntity();
+            order_business_service_products.business_service_product_id =
+              bsp.id;
+            order_business_service_products.order_id = order.id;
+            order_business_service_products.unit = bsp.unit;
+            return order_business_service_products;
+          }),
+          OrdersBusinessServicesProductsEntity,
+          ['order_id', 'business_service_product_id'],
+        );
+
+      await query_runner.commitTransaction();
+
+      return order_business_service_products;
     } catch (error) {
       await query_runner.rollbackTransaction();
       throw new InternalServerErrorException({ message: error });

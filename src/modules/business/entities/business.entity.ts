@@ -1,6 +1,7 @@
 import { UserEntity } from '../../../modules/users/entities/user.entity';
-import { Column, Entity, JoinColumn, OneToOne } from 'typeorm';
+import { Column, Entity, JoinColumn, OneToMany, OneToOne } from 'typeorm';
 import { DefaultEntity } from '../../base/entities/base.entity';
+import { OrdersEntity } from '../../../modules/orders/entities/orders.entity';
 
 @Entity('business')
 export class BusinessEntity extends DefaultEntity {
@@ -22,6 +23,12 @@ export class BusinessEntity extends DefaultEntity {
     nullable: true,
   })
   business_name: string;
+
+  @Column({
+    name: 'business_description',
+    nullable: true,
+  })
+  business_description: string;
 
   @Column({
     name: 'business_contact',
@@ -53,4 +60,7 @@ export class BusinessEntity extends DefaultEntity {
   })
   @JoinColumn({ name: 'user_id', referencedColumnName: 'id' })
   users: UserEntity;
+
+  @OneToMany(() => OrdersEntity, (o) => o.business, { cascade: true })
+  business: BusinessEntity[];
 }

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -47,6 +48,21 @@ export class ConsumersController extends ControllerFactory(
       );
       const mapped_response = plainToInstance(ConsumersResponseDto, response);
       const resp = this.CreatedResponse(mapped_response);
+      return resp;
+    } catch (error) {
+      throw error;
+    }
+  }
+  @HttpCode(HttpStatus.OK)
+  @Get('/order/get')
+  async GetConsumerOrders(
+    @CurrentUser() current_user: IRedisUserModel,
+  ): Promise<iResponseJson> {
+    try {
+      const consumer_orders = await this.consumersService.GetConsumerOrders(
+        current_user.user_id,
+      );
+      const resp = this.OKResponse(consumer_orders);
       return resp;
     } catch (error) {
       throw error;

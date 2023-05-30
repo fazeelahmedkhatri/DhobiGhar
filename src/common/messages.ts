@@ -130,4 +130,13 @@ export const MESSAGES = {
       CART_DOES_NOT_EXIST: "Cart doesn't exist",
     },
   },
+
+  ORDER: {
+    SUCCESS: {
+      ORDER_ADDED_SUCCESSFULLY: 'order has been created successfully',
+    },
+    ERROR: {
+      ORDER_DOES_NOT_EXIST: 'No records found',
+    },
+  },
 };

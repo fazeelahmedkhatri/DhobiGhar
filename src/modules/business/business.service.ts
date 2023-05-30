@@ -17,6 +17,7 @@ import { AddProductAndServicesDto } from './dto/add-products-and-services.dto';
 import { MESSAGES } from 'src/common/messages';
 import { BusinessServiceProductsEntity } from '../products/entities/business.service.products.entity';
 import duplicationProneBatchInsertion from 'src/helpers/duplicationProneBatchInsertion';
+import { OrdersEntity } from '../orders/entities/orders.entity';
 
 @Injectable()
 export class BusinessService extends BaseService<
@@ -102,9 +103,11 @@ export class BusinessService extends BaseService<
       await query_runner.release();
     }
   }
-  async GetProductAndServices(user_id): Promise<any> {
+  async GetProductAndServices(business_id): Promise<any> {
     try {
-      const business = await this.businessRepository.findOneBy({ user_id });
+      const business = await this.businessRepository.findOneBy({
+        id: business_id,
+      });
       if (!business) {
         throw new NotFoundException({
           message: MESSAGES.BUSINESS.ERROR.BUSINESS_DOES_NOT_EXIST,
@@ -138,6 +141,60 @@ export class BusinessService extends BaseService<
         service_products,
       };
       return mapped_response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async GetPastOrdersByBusiness(user_id): Promise<any> {
+    try {
+      const query_runner = this.dataSource.createQueryRunner();
+      const business = await query_runner.manager.findOneBy(BusinessEntity, {
+        user_id,
+      });
+      if (!business) {
+        throw new NotFoundException(MESSAGES.USER.ERROR.USER_DOES_NOT_EXIST);
+      }
+      const order = await query_runner.manager.findOneBy(OrdersEntity, {
+        business_id: business.id,
+      });
+      if (!order) {
+        throw new NotFoundException(MESSAGES.ORDER.ERROR.ORDER_DOES_NOT_EXIST);
+      }
+      const cart_details =
+        await this.businessRepository.GetPastOrdersByBusiness(business.id);
+      return cart_details;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async GetBusinessById(business_id): Promise<any> {
+    try {
+      const business = await this.businessRepository.findOneBy({
+        id: business_id,
+      });
+      if (!business) {
+        throw new NotFoundException({
+          message: MESSAGES.BUSINESS.ERROR.BUSINESS_DOES_NOT_EXIST,
+        });
+      }
+      const business_details = await this.businessRepository.GetBusinessById(
+        business.id,
+      );
+      return business_details;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async GetBusinessProductsByService(business_id, service_id): Promise<any> {
+    try {
+      const products =
+        await this.businessRepository.GetBusinessProductsByService(
+          business_id,
+          service_id,
+        );
+      return products;
     } catch (error) {
       throw error;
     }

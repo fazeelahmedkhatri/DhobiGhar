@@ -72,4 +72,17 @@ export class OrdersController extends ControllerFactory(
       throw error;
     }
   }
+
+  @HttpCode(HttpStatus.CREATED)
+  @Post('/create')
+  async CreateOrder(@Body() body: CreateOrdersDto): Promise<iResponseJson> {
+    try {
+      const response = await this.ordersService.CreateOrder({ ...body });
+      const mapped_response = plainToInstance(BusinessResponseDto, response);
+      const resp = this.CreatedResponse(mapped_response);
+      return resp;
+    } catch (error) {
+      throw error;
+    }
+  }
 }

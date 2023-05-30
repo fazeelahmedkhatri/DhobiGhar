@@ -4,6 +4,7 @@ import { PaymentsEntity } from '../../../modules/payments/entities/payments.enti
 import { RidersEntity } from '../../../modules/riders/entities/riders.entity';
 import { Column, Entity, JoinColumn, ManyToOne } from 'typeorm';
 import { DefaultEntity } from '../../base/entities/base.entity';
+import { BusinessEntity } from '../../../modules/business/entities/business.entity';
 
 @Entity('orders')
 export class OrdersEntity extends DefaultEntity {
@@ -68,4 +69,14 @@ export class OrdersEntity extends DefaultEntity {
   })
   @JoinColumn({ name: 'payment_id', referencedColumnName: 'id' })
   payments: PaymentsEntity;
+
+  @Column()
+  business_id: number;
+
+  @ManyToOne(() => BusinessEntity, (business) => business.id, {
+    onDelete: 'CASCADE',
+    eager: true,
+  })
+  @JoinColumn({ name: 'business_id', referencedColumnName: 'id' })
+  business: BusinessEntity;
 }

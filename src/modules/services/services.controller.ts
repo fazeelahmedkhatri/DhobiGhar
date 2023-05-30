@@ -1,8 +1,10 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
   Req,
 } from '@nestjs/common';
@@ -42,6 +44,22 @@ export class ServicesController extends ControllerFactory(
     try {
       const response = await this.servicesService.Create(body, req);
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('get/:business_id')
+  async GetServicesByBusiness(
+    @Param('business_id') business_id: number,
+  ): Promise<iResponseJson> {
+    try {
+      const services = await this.servicesService.GetServicesByBusiness(
+        business_id,
+      );
+      const resp = this.OKResponse(services);
+      return resp;
     } catch (error) {
       throw error;
     }

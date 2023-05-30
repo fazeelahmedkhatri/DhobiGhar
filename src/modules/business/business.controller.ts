@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
@@ -77,13 +78,13 @@ export class BusinessController extends ControllerFactory(
     }
   }
   @HttpCode(HttpStatus.OK)
-  @Get('products-and-services/get')
+  @Get('products-and-services/get/:business_id')
   async GetProductAndServices(
-    @CurrentUser() current_user: IRedisUserModel,
+    @Param('business_id') business_id: number,
   ): Promise<iResponseJson> {
     try {
       const products_services =
-        await this.businessService.GetProductAndServices(current_user.user_id);
+        await this.businessService.GetProductAndServices(business_id);
       const resp = this.OKResponse(products_services);
       return resp;
     } catch (error) {
@@ -100,6 +101,57 @@ export class BusinessController extends ControllerFactory(
       const business_details = await this.businessService.GetBusiness(
         business_id,
       );
+      const resp = this.OKResponse(business_details);
+      return resp;
+    } catch (error) {
+      throw error;
+    }
+  }
+  @HttpCode(HttpStatus.OK)
+  @Get('/past-orders')
+  async GetConsumerOrders(
+    @CurrentUser() current_user: IRedisUserModel,
+  ): Promise<iResponseJson> {
+    try {
+      const consumer_orders =
+        await this.businessService.GetPastOrdersByBusiness(
+          current_user.user_id,
+        );
+      const resp = this.OKResponse(consumer_orders);
+      return resp;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('details/:business_id')
+  async GetBusinessById(
+    @Param('business_id') business_id: number,
+  ): Promise<iResponseJson> {
+    try {
+      const business_details = await this.businessService.GetBusinessById(
+        business_id,
+      );
+      const resp = this.OKResponse(business_details);
+      return resp;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('products')
+  async GetBusinessProductsByService(
+    @Query('business_id') business_id: number,
+    @Query('service_id') service_id: number,
+  ): Promise<iResponseJson> {
+    try {
+      const business_details =
+        await this.businessService.GetBusinessProductsByService(
+          business_id,
+          service_id,
+        );
       const resp = this.OKResponse(business_details);
       return resp;
     } catch (error) {
